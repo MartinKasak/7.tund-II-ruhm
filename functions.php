@@ -225,6 +225,46 @@
 		return $result;
 	}
 	
+	function getAllUserInterests() {
+		
+		$database = "if16_martkasa";
+		$mysqli = new mysqli($GLOBALS["serverHost"], $GLOBALS["serverUsername"], $GLOBALS["serverPassword"], $database);
+		
+		$stmt = $mysqli->prepare("
+			SELECT interest FROM interests
+			JOIN user_interests ON 
+			interests.id = user_interests.interest_id
+			WHERE user_interests.user_id = ?
+		");
+		echo $mysqli->error;
+		$stmt->bind_param("i", $_SESSION["userId"]);
+		
+		$stmt->bind_result($interest);
+		$stmt->execute();
+		
+		
+		//tekitan massiivi
+		$result = array();
+		
+		// tee seda seni, kuni on rida andmeid
+		// mis vastab select lausele
+		while ($stmt->fetch()) {
+			
+			//tekitan objekti
+			$i = new StdClass();
+			
+			
+			$i->interest = $interest;
+		
+			array_push($result, $i);
+		}
+		
+		$stmt->close();
+		$mysqli->close();
+		
+		return $result;
+	}
+	
 	function saveUserInterest ($interest) {
 		
 		$database = "if16_martkasa";
